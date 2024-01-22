@@ -29,9 +29,14 @@ def populate_messages(current_session):
             main_container.markdown(body=message)
 
 
+def is_expandable():
+    st.session_state['isExpandable'] = len(session_db.get_sessions()) > 1
+
+
 def create_new_session():
     global recent_session  # This is a global variable
     recent_session = session_db.create_new_session()
+    is_expandable()
 
 
 def create_new_session_enabled():
@@ -40,9 +45,10 @@ def create_new_session_enabled():
 
 # Sidebar
 with st.sidebar:
+    is_expandable()
     create_new_session_enabled()
     st.button('Create New Chat', on_click=create_new_session, disabled=not st.session_state['isEnable'])
-    with st.expander(expanded=True, label='Chat History'):
+    with st.expander(expanded=st.session_state['isExpandable'], label='Chat History'):
         for session in reversed(session_db.get_sessions()):
             st.button(f'Session ID: {formate_time(session.created_at)}', id(session.session_id),
                       on_click=populate_messages, args=(session,))
