@@ -15,7 +15,7 @@ class Messages:
         self.__created_at = current_milli_time()
 
     def get_message(self):
-        return self.__message, self.__role, self.__created_at
+        return self.__message or '', self.__role, self.__created_at
 
 
 class Session:
@@ -23,7 +23,7 @@ class Session:
 
     def __init__(self, message=None):
         if message is None:
-            message = []
+            message: [Messages] = []
         self.__messages = message
         self.session_id = Session.session_id
         self.created_at = current_milli_time()
@@ -40,10 +40,17 @@ class Session:
 
 
 class SessionDatabase:
-    def __init__(self, sessions=[Session()]):
+    def __init__(self, sessions=None):
         self.__sessions = sessions
+        if sessions is None:
+            self.create_new_session()
+        else:
+            self.__sessions = sessions
 
     def create_new_session(self):
+        print('Creating new session')
+        if self.__sessions is None:
+            self.__sessions = []
         new_session = Session()
         self.__sessions.append(new_session)
         return new_session
@@ -59,4 +66,3 @@ class SessionDatabase:
             if session_id == session.session_id:
                 return session
         return None
-
