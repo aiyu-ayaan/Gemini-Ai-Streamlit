@@ -41,16 +41,11 @@ class Session:
 
 class SessionDatabase:
     def __init__(self, sessions=None):
-        self.__sessions = sessions
         if sessions is None:
-            self.create_new_session()
-        else:
-            self.__sessions = sessions
+            sessions: [Session] = []
+        self.__sessions = sessions
 
     def create_new_session(self):
-        print('Creating new session')
-        if self.__sessions is None:
-            self.__sessions = []
         new_session = Session()
         self.__sessions.append(new_session)
         return new_session

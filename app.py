@@ -4,13 +4,15 @@ from database.Session import SessionDatabase, Messages, Role
 from utils.Utils import formate_time, States
 
 session_db = SessionDatabase()
-recent_session = session_db.get_recent_session() if States.CURRENT_SESSION not in st.session_state or st.session_state[
+recent_session = session_db.create_new_session() if States.CURRENT_SESSION not in st.session_state or st.session_state[
     States.CURRENT_SESSION] is None else st.session_state[
     States.CURRENT_SESSION]
 
 st.set_page_config(page_title='Tutor Talk', page_icon=':shark:', layout='wide')
 
 main_container = st.container()
+for session in session_db.get_sessions():
+    print(session.session_id)
 
 
 def populate_messages(current_session=None):
@@ -54,7 +56,6 @@ with st.sidebar:
     st.button('Create New Chat', on_click=create_new_session,
               disabled=not st.session_state[States.IS_CREATE_NEW_SESSION_ENABLED])
     with st.expander(expanded=st.session_state[States.IS_CHAT_HISTORY_EXPANDABLE], label='Chat History'):
-        # print(len(session_db.get_sessions()))
         for session in reversed(session_db.get_sessions()):
             st.button(f'Session ID: {formate_time(session.created_at)}', id(session.session_id),
                       on_click=populate_messages, args=(session,))
