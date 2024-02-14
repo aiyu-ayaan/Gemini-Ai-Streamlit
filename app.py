@@ -1,11 +1,14 @@
 import streamlit as st
 
 from components.IconButton import icon_button, open_page
+from database.Session import Database, Role, get_session, State, Message
 
 st.set_page_config(page_title='Tutor Talk', page_icon='🤖:', layout='wide')
 
 main_container = st.container()
 side_bar = st.sidebar
+
+db = Database()
 
 
 def about_section():
@@ -44,9 +47,23 @@ with side_bar:
     dev_section()
     his_section()
 
+
+def message_container(message: Message):
+    if message.get_role() == Role.BOT:
+        with st.container():
+            st.subheader('🤖')
+            st.markdown(message.get_content(), unsafe_allow_html=True)
+    else:
+        with st.container():
+            st.subheader('👤')
+            st.markdown(message.get_content(), unsafe_allow_html=True)
+
+
 prompt = st.chat_input('Ask me anything!')
 with main_container:
     st.title('🤖 Chatbot')
     st.caption('An chatbot based on Gemini Ai.')
     if prompt:
-        st.markdown(prompt)
+        db.add_message(prompt, Role.USER)
+        for i in get_session(State.MESSAGES.value):
+            message_container(i)

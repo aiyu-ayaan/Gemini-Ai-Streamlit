@@ -1,5 +1,5 @@
 from enum import Enum
-
+import streamlit as st
 from utils.Utils import current_milli_time, formate_time
 
 
@@ -8,56 +8,43 @@ class Role(Enum):
     USER = 1
 
 
-class Messages:
-    def __init__(self, message='', role=Role.USER):
-        self.__message = message
-        self.__role: Role = role
-        self.__created_at = current_milli_time()
-
-    def get_message(self):
-        return self.__message or '', self.__role, self.__created_at
+class State(Enum):
+    DATABASE_STATE = 'database_state'
+    CURRENT_SESSION = 'current_session'
+    MESSAGES = 'messages'
 
 
-class Session:
-    session_id = 0
+def create_or_update_session(key, init_value=None, updated_value=None):
+    if key not in st.session_state and init_value is not None:
+        st.session_state[key] = init_value
+    elif key in st.session_state and updated_value is not None:
+        st.session_state[key] = updated_value
 
-    def __init__(self, message=None):
-        if message is None:
-            message: [Messages] = []
-        self.__messages = message
-        self.session_id = Session.session_id
-        self.created_at = current_milli_time()
-        Session.session_id += 1
-
-    def add_message(self, message: Messages):
-        self.__messages.append(message)
-
-    def get_messages(self):
-        return self.__messages
-
-    def get_created_time(self):
-        return formate_time(self.created_at)
+    return st.session_state[key] if key in st.session_state else None
 
 
-class SessionDatabase:
-    def __init__(self, sessions=None):
-        if sessions is None:
-            sessions: [Session] = []
-        self.__sessions = sessions
+def get_session(key):
+    return st.session_state[key]
 
-    def create_new_session(self):
-        new_session = Session()
-        self.__sessions.append(new_session)
-        return new_session
 
-    def get_sessions(self):
-        return self.__sessions
+class Message:
+    def __init__(self, role: Role = Role.BOT, content: str = ''):
+        self.__role = role
+        self.__content = content
+        self.__time_stamp = current_milli_time()
 
-    def get_recent_session(self):
-        return self.__sessions[-1]
+    def get_role(self):
+        return self.__role
 
-    def get_session_by_id(self, session_id):
-        for session in self.__sessions:
-            if session_id == session.session_id:
-                return session
-        return None
+    def get_content(self):
+        return self.__content
+
+
+class Database:
+
+    @staticmethod
+    def add_message(message: str, role: Role = Role.BOT):
+        messages = create_or_update_session(State.MESSAGES.value, [])
+        messages.append(Message(role, message))
+        print(len(messages))
+        create_or_update_session(State.MESSAGES.value, updated_value=messages)
