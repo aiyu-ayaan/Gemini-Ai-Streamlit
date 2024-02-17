@@ -27,7 +27,7 @@ def dev_section():
                 st.image('img/female.png', width=80)
                 st.subheader('Shakya')
                 st.write('Role: Gussa Karna')
-                icon_button(icon=r'\f35d', on_click=open_page, args=['https://www.github.com/'], key='shakya')
+                icon_button(icon=r'\f35d', on_click=open_page, args=['https://github.com/shakya1527'], key='shakya')
         with col2:
             with st.container(border=True):
                 st.image('img/male.png', width=80)
