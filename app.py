@@ -1,7 +1,7 @@
 import streamlit as st
 
 from components.IconButton import icon_button, open_page
-from database.Session import Database, Role, get_session, State, Message
+from database.Session import Database, Role, get_value_from_state, State, Message
 
 st.set_page_config(page_title='Tutor Talk', page_icon='🤖:', layout='wide')
 
@@ -15,7 +15,8 @@ def about_section():
     with st.expander("About", expanded=True):
         st.title('🤖 Chatbot')
         st.write('Welcome to Tutor Talk')
-        icon_button(icon=r'\f35d', on_click=open_page, args=['https://www.github.com'], key='app-code')
+        icon_button(icon=r'\f35d', on_click=open_page, args =['https://www.github.com'], key='app-code')
+        st.button('➕ New Chat', key='new-chat')
 
 
 def dev_section():
@@ -36,10 +37,11 @@ def dev_section():
 
 
 def his_section():
+    db.create_new_session_session_list()
     with st.expander('History', expanded=True):
         st.subheader('All history')
-        with st.container(border=True):
-            st.write('No history yet')
+        for session in get_value_from_state(State.SESSION_LIST_STATE.value):
+            st.button(session.get_session_name(), key=session.get_session_id())
 
 
 with side_bar:
@@ -65,5 +67,5 @@ with main_container:
     st.caption('An chatbot based on Gemini Ai.')
     if prompt:
         db.add_message(prompt, Role.USER)
-        for i in get_session(State.MESSAGES.value):
+        for i in get_value_from_state(State.MESSAGES_LIST.value):
             message_container(i)
