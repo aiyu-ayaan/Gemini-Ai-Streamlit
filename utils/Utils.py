@@ -1,4 +1,5 @@
 import time
+import webbrowser
 from datetime import datetime
 from enum import Enum
 
@@ -18,4 +19,12 @@ class States(Enum):
     IS_CREATE_NEW_SESSION_ENABLED = 'is_create_new_session_enabled'
 
 
+class Links(Enum):
+    GITHUB = 'https://github.com/aiyu-ayaan/Gemini-Ai-Streamlit'
+    GEMINI = 'https://ai.google.dev/'
+    STREAMLIT = 'https://streamlit.io/'
+    PYTHON = 'https://www.python.org/'
+    AYAAN = 'https://www.github.com/aiyu-ayaan'
 
+def open_page(url):
+    webbrowser.open_new_tab(url)

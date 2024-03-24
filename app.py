@@ -1,11 +1,13 @@
 import streamlit as st
 
-from components.IconButton import icon_button, open_page
+from database.Emoji import Emoji
 from database.Repository import get_value_from_state, State, create_or_update_session, ChatRepositoryImp
 from database.Session import Role, Message
 from gemini.Gemini import Gemini
+from utils.Utils import Links, open_page
 
-st.set_page_config(page_title='Tutor Talk', page_icon='🤖:', layout='wide')
+emoji = Emoji().get_random_emoji()
+st.set_page_config(page_title='Tutor Talk', page_icon=f'{emoji}', layout='wide')
 
 main_container = st.container()
 side_bar = st.sidebar
@@ -22,28 +24,9 @@ gemini: Gemini = create_or_update_session(
 
 def about_section():
     with st.expander("About", expanded=True):
-        st.title('🤖 Chatbot')
+        st.title(f'{emoji} Chatbot')
         st.write('Welcome to Tutor Talk')
-        st.caption('by Ayaan')
-        icon_button(icon=r'\f35d', on_click=open_page, args=['https://www.github.com'], key='app-code')
-        st.button('➕ New Chat', key='new-chat', on_click=database.create_new_session)
-
-
-# def dev_section():
-#     with st.expander('Know about developer'):
-#         # col1 = st.columns(1)
-#         # with col1:
-#         #     with st.container(border=True):
-#         #         st.image('img/female.png', width=80)
-#         #         st.subheader('Shakya')
-#         #         st.write('Role: Gussa Karna')
-#         #         icon_button(icon=r'\f35d', on_click=open_page, args=['https://www.github.com/'], key='shakya')
-#         # with col1:
-#         with st.container(border=True):
-#             st.image('img/male.png', width=80)
-#             st.subheader('Ayaan')
-#             st.write('Role: Gussa jhelna')
-#             icon_button(icon=r'\f35d', on_click=open_page, args=['https://www.github.com/aiyu-ayaan'], key='ayaan')
+        st.button('➕ New Chat', key='new-chat', on_click=database.create_new_session, use_container_width=True)
 
 
 def populate_messages(session_id: int):
@@ -59,10 +42,28 @@ def his_section():
                       on_click=populate_messages, args=[session.get_session_id()])
 
 
+def acknowledgements_sec():
+    with st.expander('Acknowledgements', expanded=False):
+        st.button('Source Code', on_click=open_page, args=[Links.GITHUB.value], key='app-code', use_container_width=True)
+        with st.container(border=True):
+            st.image('img/male.png', width=80)
+            st.subheader('Ayaan', divider=True)
+            st.button('Github', on_click=open_page, args=[Links.AYAAN.value], use_container_width=True,
+                      key='ayaan-github')
+        with st.container():
+            st.caption('This project is made using:')
+            st.button('Streamlit', on_click=open_page, args=[Links.STREAMLIT.value], use_container_width=True,
+                      key='streamlit')
+            st.button('Python', on_click=open_page, args=[Links.PYTHON.value], use_container_width=True, key='python')
+            st.button('Gemini Ai', on_click=open_page, args=[Links.GEMINI.value], use_container_width=True,
+                      key='gemini')
+
+
 with side_bar:
     about_section()
     # dev_section()
     his_section()
+    acknowledgements_sec()
 
 
 def message_container(message: Message):
@@ -78,7 +79,7 @@ def message_container(message: Message):
 
 prompt = st.chat_input('Ask me anything!')
 with main_container:
-    st.title('🤖 Chatbot')
+    st.title(f'{emoji} Chatbot')
     st.caption('An chatbot based on Gemini Ai.')
     if prompt:
         database.add_message(message=prompt, role=Role.USER)
