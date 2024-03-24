@@ -3,12 +3,12 @@ from utils.Utils import current_milli_time, formate_time
 
 
 class Role(Enum):
-    BOT = 0
+    MODEL = 0
     USER = 1
 
 
 class Message:
-    def __init__(self, role: Role = Role.BOT, content: str = ''):
+    def __init__(self, role: Role = Role.MODEL, content: str = ''):
         self.__role = role
         self.__content = content
         self.__time_stamp = current_milli_time()
@@ -39,3 +39,7 @@ class Session:
 
     def get_messages(self):
         return self.__messages
+
+
+def map_message_list_to_history(messages: list[Message]):
+    return [{'role': message.get_role().name.lower(), 'parts': [message.get_content()]} for message in messages]

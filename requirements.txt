@@ -54,7 +54,7 @@ six==1.16.0
 smmap==5.0.1
 soupsieve==2.5
 st-annotated-text==4.0.1
-streamlit==1.30.0
+streamlit~=1.32.2
 streamlit-camera-input-live==0.2.0
 streamlit-card==1.0.0
 streamlit-embedcode==0.1.2
@@ -76,3 +76,5 @@ validators==0.22.0
 watchdog==3.0.0
 yarg==0.1.9
 zipp==3.17.0
+
+python-dotenv~=1.0.1

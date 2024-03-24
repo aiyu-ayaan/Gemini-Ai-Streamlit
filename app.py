@@ -1,8 +1,9 @@
 import streamlit as st
 
 from components.IconButton import icon_button, open_page
-from database.Session import Role, Message
 from database.Repository import get_value_from_state, State, create_or_update_session, ChatRepositoryImp
+from database.Session import Role, Message
+from gemini.Gemini import Gemini
 
 st.set_page_config(page_title='Tutor Talk', page_icon='🤖:', layout='wide')
 
@@ -11,6 +12,11 @@ side_bar = st.sidebar
 database: ChatRepositoryImp = create_or_update_session(
     State.CHAT_REPOSITORY.value,
     init_value=ChatRepositoryImp()
+)
+
+gemini: Gemini = create_or_update_session(
+    State.GEMINI.value,
+    init_value=Gemini()
 )
 
 
@@ -40,12 +46,17 @@ def about_section():
 #             icon_button(icon=r'\f35d', on_click=open_page, args=['https://www.github.com/aiyu-ayaan'], key='ayaan')
 
 
+def populate_messages(session_id: int):
+    database.get_current_session(session_id)
+    gemini.start_new_chat(database.get_current().get_messages())
+
+
 def his_section():
     with st.expander('History', expanded=True):
         st.subheader('All history')
         for session in reversed(get_value_from_state(State.SESSION_LIST_STATE.value)):
             st.button(session.get_session_name(), key=session.get_session_id,
-                      on_click=database.get_current_session, args=[session.get_session_id()])
+                      on_click=populate_messages, args=[session.get_session_id()])
 
 
 with side_bar:
@@ -55,13 +66,13 @@ with side_bar:
 
 
 def message_container(message: Message):
-    if message.get_role() == Role.BOT:
+    if message.get_role() == Role.MODEL:
         with st.container():
-            st.subheader('🤖')
+            st.caption('Model 🤖')
             st.markdown(message.get_content(), unsafe_allow_html=True)
     else:
         with st.container():
-            st.subheader('👤')
+            st.caption('User 👨‍💻')
             st.markdown(message.get_content(), unsafe_allow_html=True)
 
 
@@ -71,5 +82,7 @@ with main_container:
     st.caption('An chatbot based on Gemini Ai.')
     if prompt:
         database.add_message(message=prompt, role=Role.USER)
+        response = gemini.send_message(prompt, Role.USER)
+        database.add_message(response.get_content(), Role.MODEL)
     for i in database.get_current().get_messages():
         message_container(i)

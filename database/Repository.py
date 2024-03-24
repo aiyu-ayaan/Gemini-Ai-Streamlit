@@ -1,12 +1,14 @@
 from enum import Enum
 
+import streamlit as st
+
 from database.Interface import ChatRepository
 from database.Session import Session, Message, Role
-import streamlit as st
 
 
 class State(Enum):
     CHAT_REPOSITORY = 'ChatRepository'
+    GEMINI = 'Gemini'
     DATABASE_STATE = 'database_state'
     SESSION_LIST_STATE = 'session_list_state'
     CURRENT_SESSION = 'current_session'
