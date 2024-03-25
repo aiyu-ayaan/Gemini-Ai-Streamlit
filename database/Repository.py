@@ -13,6 +13,7 @@ class State(Enum):
     SESSION_LIST_STATE = 'session_list_state'
     CURRENT_SESSION = 'current_session'
     MESSAGES_LIST = 'messages_list'
+    SUMMARY_MARKDOWN = 'summary_markdown'
 
 
 def create_or_update_session(key, init_value=None, updated_value=None):

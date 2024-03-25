@@ -3,6 +3,8 @@ import webbrowser
 from datetime import datetime
 from enum import Enum
 
+import validators
+
 
 def current_milli_time():
     return round(time.time() * 1000)
@@ -26,5 +28,10 @@ class Links(Enum):
     PYTHON = 'https://www.python.org/'
     AYAAN = 'https://www.github.com/aiyu-ayaan'
 
+
 def open_page(url):
     webbrowser.open_new_tab(url)
+
+
+def is_valid_url(url):
+    return validators.url(url) is True
