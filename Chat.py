@@ -6,6 +6,7 @@ from database.Emoji import Emoji
 from database.Repository import get_value_from_state, State, create_or_update_session, ChatRepositoryImp
 from database.Session import Role, Message
 from gemini.Gemini import Gemini
+from output.MarkdownToPdf import Export
 from utils.Utils import Links, open_page
 
 emoji = Emoji().get_random_emoji()
@@ -40,6 +41,30 @@ gemini: Gemini = create_or_update_session(
     init_value=Gemini()
 )
 
+export: Export = create_or_update_session(
+    State.EXPORT.value,
+    init_value=Export()
+)
+markdown = r'''
+To run a command like `mdpdf -o output.pdf .\input.md` in code, you can use a programming language that allows you to execute shell commands. Here's an example using Python:
+
+```python
+import subprocess
+
+# Define the command
+command = ["mdpdf", "-o", "output.pdf", "./input.md"]
+
+# Execute the command
+try:
+    subprocess.run(command, check=True)
+    print("PDF generation successful!")
+except subprocess.CalledProcessError as e:
+    print("Error:", e)
+```
+
+Make sure you have Python installed on your system. This script will execute the `mdpdf` command with the specified arguments. If the command is successful, it will print "PDF generation successful!". If there's an error, it will print the error message.
+'''
+
 
 def about_section():
     with st.expander("About", expanded=True):
@@ -47,6 +72,10 @@ def about_section():
         st.write('Welcome to Tutor Talk')
         st.button('➕ New Chat', key='new-chat', on_click=database.create_new_session, use_container_width=True,
                   disabled=len(database.get_current().get_messages()) == 0
+                  )
+        st.button('Export to PDF', key='export-pdf', use_container_width=True,
+                  on_click=export.export_to_pdf,
+                  args=[markdown, st, database.get_current().get_session_name() + '.pdf'],
                   )
 
 
