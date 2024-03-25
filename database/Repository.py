@@ -9,6 +9,7 @@ from database.Session import Session, Message, Role
 class State(Enum):
     CHAT_REPOSITORY = 'ChatRepository'
     GEMINI = 'Gemini'
+    EXPORT = 'Export'
     DATABASE_STATE = 'database_state'
     SESSION_LIST_STATE = 'session_list_state'
     CURRENT_SESSION = 'current_session'
