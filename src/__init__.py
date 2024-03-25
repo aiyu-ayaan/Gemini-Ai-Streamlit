@@ -7,7 +7,7 @@ from database.Repository import get_value_from_state, State, create_or_update_se
 from database.Session import Role, Message
 from gemini.Gemini import Gemini
 from output.MarkdownToPdf import Export
-from utils.Utils import Links, open_page
+from utils.Utils import Links
 
 emoji = Emoji().get_random_emoji()
 st.set_page_config(page_title='Tutor Talk', page_icon=f'{emoji}', layout='wide')
@@ -58,6 +58,7 @@ def about_section():
                   on_click=export.export_to_pdf,
                   args=[database.get_current().convert_to_markdown(), main_container,
                         database.get_current().get_session_name() + '.pdf'],
+                  disabled=len(database.get_current().get_messages()) == 0
                   )
 
 
@@ -93,25 +94,20 @@ def his_section():
 
 def acknowledgements_sec():
     with st.expander('Acknowledgements', expanded=False):
-        st.button('Source Code', on_click=open_page, args=[Links.GITHUB.value], key='app-code',
-                  use_container_width=True)
+        st.link_button('Source Code', url=Links.GITHUB.value, use_container_width=True)
         with st.container(border=True):
-            st.image('img/male.png', width=80)
+            st.image('src/img/male.png', width=80)
             st.subheader('Ayaan', divider=True)
-            st.button('Github', on_click=open_page, args=[Links.AYAAN.value], use_container_width=True,
-                      key='ayaan-github')
+            st.link_button('Github', url=Links.AYAAN.value, use_container_width=True)
         with st.container():
             st.caption('This project is made using:')
-            st.button('Streamlit', on_click=open_page, args=[Links.STREAMLIT.value], use_container_width=True,
-                      key='streamlit')
-            st.button('Python', on_click=open_page, args=[Links.PYTHON.value], use_container_width=True, key='python')
-            st.button('Gemini Ai', on_click=open_page, args=[Links.GEMINI.value], use_container_width=True,
-                      key='gemini')
+            st.link_button('Streamlit', url=Links.STREAMLIT.value, use_container_width=True)
+            st.link_button('Python', url=Links.PYTHON.value, use_container_width=True)
+            st.link_button('Gemini Ai', url=Links.GEMINI.value, use_container_width=True)
 
 
 with side_bar:
     about_section()
-    # dev_section()
     his_section()
     acknowledgements_sec()
 
