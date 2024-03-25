@@ -1,3 +1,5 @@
+import asyncio
+
 import streamlit as st
 
 from database.Emoji import Emoji
@@ -8,6 +10,23 @@ from utils.Utils import Links, open_page
 
 emoji = Emoji().get_random_emoji()
 st.set_page_config(page_title='Tutor Talk', page_icon=f'{emoji}', layout='wide')
+
+hide_streamlit_style = '''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+.css-1y0tads {padding-top: 0rem;}
+.stDeployButton {
+            visibility: hidden;
+        }
+[data-testid="stStatusWidget"] {
+    visibility: hidden;
+}
+</style>
+
+'''
+
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 main_container = st.container()
 side_bar = st.sidebar
@@ -26,12 +45,31 @@ def about_section():
     with st.expander("About", expanded=True):
         st.title(f'{emoji} Chatbot')
         st.write('Welcome to Tutor Talk')
-        st.button('➕ New Chat', key='new-chat', on_click=database.create_new_session, use_container_width=True)
+        st.button('➕ New Chat', key='new-chat', on_click=database.create_new_session, use_container_width=True,
+                  disabled=len(database.get_current().get_messages()) == 0
+                  )
+
+
+def message_container(message: Message):
+    if message.get_role() == Role.MODEL:
+        with st.chat_message('AI'):
+            st.markdown(message.get_content(), unsafe_allow_html=True)
+    elif message.get_role() == Role.USER:
+        with st.chat_message('User'):
+            st.markdown(message.get_content(), unsafe_allow_html=True)
+    else:
+        st.error('Unknown Role')
+        st.caption('Message set to empty due to unknown role.')
+        current_session = database.get_current()
+        current_session.update_message([])
 
 
 def populate_messages(session_id: int):
     database.get_current_session(session_id)
     gemini.start_new_chat(database.get_current().get_messages())
+    # with main_container:
+    #     for i in database.get_current().get_messages():
+    #         message_container(i)
 
 
 def his_section():
@@ -44,7 +82,8 @@ def his_section():
 
 def acknowledgements_sec():
     with st.expander('Acknowledgements', expanded=False):
-        st.button('Source Code', on_click=open_page, args=[Links.GITHUB.value], key='app-code', use_container_width=True)
+        st.button('Source Code', on_click=open_page, args=[Links.GITHUB.value], key='app-code',
+                  use_container_width=True)
         with st.container(border=True):
             st.image('img/male.png', width=80)
             st.subheader('Ayaan', divider=True)
@@ -65,25 +104,21 @@ with side_bar:
     his_section()
     acknowledgements_sec()
 
-
-def message_container(message: Message):
-    if message.get_role() == Role.MODEL:
-        with st.container():
-            st.caption('Model 🤖')
-            st.markdown(message.get_content(), unsafe_allow_html=True)
-    else:
-        with st.container():
-            st.caption('User 👨‍💻')
-            st.markdown(message.get_content(), unsafe_allow_html=True)
-
-
 prompt = st.chat_input('Ask me anything!')
+
+
+async def process_message(input_message: str):
+    database.add_message(message=input_message, role=Role.USER)
+    response = await gemini.send_message(input_message, Role.USER)
+    database.add_message(response.get_content(), Role.MODEL)
+    st.rerun()
+
+
 with main_container:
     st.title(f'{emoji} Chatbot')
     st.caption('An chatbot based on Gemini Ai.')
-    if prompt:
-        database.add_message(message=prompt, role=Role.USER)
-        response = gemini.send_message(prompt, Role.USER)
-        database.add_message(response.get_content(), Role.MODEL)
     for i in database.get_current().get_messages():
         message_container(i)
+    if prompt:
+        with st.spinner('Thinking...'):
+            asyncio.run(process_message(prompt))

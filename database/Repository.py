@@ -60,7 +60,7 @@ class ChatRepositoryImp(ChatRepository):
                 return session
         return self.__current_session
 
-    def get_current(self):
+    def get_current(self)-> Session:
         return get_value_from_state(State.CURRENT_SESSION.value)
 
     def add_message(self, message: str, role: Role):

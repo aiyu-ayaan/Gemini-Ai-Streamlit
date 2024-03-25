@@ -24,7 +24,7 @@ class Gemini:
             history=map_message_list_to_history(m_list)
         )
 
-    def send_message(self, message: str, role: Role):
+    async def send_message(self, message: str, role: Role) -> Message:
         response = self.__chat.send_message({'role': role.name.lower(), 'parts': [message]})
         return Message(
             role=Role.MODEL,
