@@ -18,6 +18,23 @@ summary_markdown = create_or_update_session(
     ''
 )
 
+hide_streamlit_style = '''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+.css-1y0tads {padding-top: 0rem;}
+.stDeployButton {
+            visibility: hidden;
+        }
+[data-testid="stStatusWidget"] {
+    visibility: hidden;
+}
+</style>
+
+'''
+
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 side_bar = st.sidebar
 main_container = st.container()
 
