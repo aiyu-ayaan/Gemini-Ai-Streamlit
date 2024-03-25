@@ -1,9 +1,9 @@
 import time
-import webbrowser
 from datetime import datetime
 from enum import Enum
 
 import validators
+from streamlit.components.v1 import html
 
 
 def current_milli_time():
@@ -30,7 +30,12 @@ class Links(Enum):
 
 
 def open_page(url):
-    webbrowser.open_new_tab(url)
+    open_script = """
+            <script type="text/javascript">
+                window.open('%s', '_blank').focus();
+            </script>
+        """ % url
+    html(open_script)
 
 
 def is_valid_url(url):
