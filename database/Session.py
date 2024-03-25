@@ -57,6 +57,13 @@ class Session:
                 markdown += message.get_content() + '\n'
             else:
                 markdown += '### ' + message.get_content() + '\n'
+        markdown += '\n\n'
+        markdown += '---'
+        markdown += '\n\n'
+        # markdown += '\n\n'
+        # markdown += 'Developed by [Ayaan](https://www.github.com/aiyu-ayaan)'
+        # markdown += '\n\n'
+        markdown += 'Get the code on [GitHub](https://github.com/aiyu-ayaan/Gemini-Ai-Streamlit)'
 
         return to_markdown(markdown).data
 

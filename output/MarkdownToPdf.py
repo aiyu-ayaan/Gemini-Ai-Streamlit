@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 import streamlit as st
@@ -20,6 +21,8 @@ class Export:
                         file_name=name,
                         mime='application/pdf'
                     )
+                os.remove('./output/mktopdf.md')
+                os.remove('./output/output.pdf')
         except subprocess.CalledProcessError as e:
             if container is not None:
                 container.error("An error occurred while creating PDF")
