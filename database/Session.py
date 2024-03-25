@@ -1,5 +1,14 @@
+import textwrap
 from enum import Enum
+
+from IPython.display import Markdown
+
 from utils.Utils import current_milli_time, formate_time
+
+
+def to_markdown(text):
+    text = text.replace('•', '  *')
+    return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
 
 
 class Role(Enum):
@@ -39,6 +48,17 @@ class Session:
 
     def get_messages(self):
         return self.__messages
+
+    def convert_to_markdown(self):
+        markdown = '# ' + 'Tutor Talk\n\n'
+        markdown += f'## {self.__session_name}\n\n'
+        for message in self.__messages:
+            if message.get_role() == Role.MODEL:
+                markdown += message.get_content() + '\n'
+            else:
+                markdown += '### ' + message.get_content() + '\n'
+
+        return to_markdown(markdown).data
 
 
 def map_message_list_to_history(messages: list[Message]):

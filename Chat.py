@@ -45,25 +45,6 @@ export: Export = create_or_update_session(
     State.EXPORT.value,
     init_value=Export()
 )
-markdown = r'''
-To run a command like `mdpdf -o output.pdf .\input.md` in code, you can use a programming language that allows you to execute shell commands. Here's an example using Python:
-
-```python
-import subprocess
-
-# Define the command
-command = ["mdpdf", "-o", "output.pdf", "./input.md"]
-
-# Execute the command
-try:
-    subprocess.run(command, check=True)
-    print("PDF generation successful!")
-except subprocess.CalledProcessError as e:
-    print("Error:", e)
-```
-
-Make sure you have Python installed on your system. This script will execute the `mdpdf` command with the specified arguments. If the command is successful, it will print "PDF generation successful!". If there's an error, it will print the error message.
-'''
 
 
 def about_section():
@@ -75,7 +56,8 @@ def about_section():
                   )
         st.button('Export to PDF', key='export-pdf', use_container_width=True,
                   on_click=export.export_to_pdf,
-                  args=[markdown, st, database.get_current().get_session_name() + '.pdf'],
+                  args=[database.get_current().convert_to_markdown(), st,
+                        database.get_current().get_session_name() + '.pdf'],
                   )
 
 
