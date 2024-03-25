@@ -48,7 +48,7 @@ export: Export = create_or_update_session(
 
 
 def about_section():
-    with st.expander("About", expanded=True):
+    with st.expander("About", expanded=True) as e:
         st.title(f'{emoji} Chatbot')
         st.write('Welcome to Tutor Talk')
         st.button('➕ New Chat', key='new-chat', on_click=database.create_new_session, use_container_width=True,
@@ -56,7 +56,7 @@ def about_section():
                   )
         st.button('Export to PDF', key='export-pdf', use_container_width=True,
                   on_click=export.export_to_pdf,
-                  args=[database.get_current().convert_to_markdown(), st,
+                  args=[database.get_current().convert_to_markdown(), main_container,
                         database.get_current().get_session_name() + '.pdf'],
                   )
 
@@ -65,14 +65,14 @@ def message_container(message: Message):
     if message.get_role() == Role.MODEL:
         with st.chat_message('AI'):
             st.markdown(message.get_content(), unsafe_allow_html=True)
-    elif message.get_role() == Role.USER:
+    else:
         with st.chat_message('User'):
             st.markdown(message.get_content(), unsafe_allow_html=True)
-    else:
-        st.error('Unknown Role')
-        st.caption('Message set to empty due to unknown role.')
-        current_session = database.get_current()
-        current_session.update_message([])
+    # else:
+    #     st.error('Unknown Role')
+    #     st.caption('Message set to empty due to unknown role.')
+    #     current_session = database.get_current()
+    #     current_session.update_message([])
 
 
 def populate_messages(session_id: int):
