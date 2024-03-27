@@ -7,8 +7,7 @@ from database.Session import Session, Message, Role
 
 
 class State(Enum):
-    """
-    Enum to define the state keys for the session state.
+    """Enum to define the state keys for the session state.
     """
     CHAT_REPOSITORY = 'ChatRepository'
     GEMINI = 'Gemini'
@@ -21,12 +20,15 @@ class State(Enum):
 
 
 def create_or_update_session(key, init_value=None, updated_value=None):
-    """
-    Function to create or update a session state.
-    :param key: Key of the session state
-    :param init_value: Initial value to set
-    :param updated_value: Updated value to set
-    :return: value of the session state
+    """Function to create or update a session state.
+
+    Args:
+        key (any): _description_
+        init_value (any, optional): Initial value. Defaults to None.
+        updated_value (any, optional): Updated value. Defaults to None.
+
+    Returns:
+        any: Value of the session state
     """
     if key not in st.session_state and init_value is not None:
         st.session_state[key] = init_value
@@ -37,17 +39,21 @@ def create_or_update_session(key, init_value=None, updated_value=None):
 
 
 def get_value_from_state(key):
-    """
-    Function to get the value from the session state.
-    :param key: Key of the session state.
-    :return: Value of the session state
+    """Function to get the value from the session state.
+    Args:
+        key (any): Key of the session state.
+
+    Returns:
+        any: Value of the session state
     """
     return st.session_state[key]
 
 
 class ChatRepositoryImp(ChatRepository):
-    """
-    Class to implement the ChatRepository interface.
+    """Class to implement the ChatRepository interface.
+
+    Args:
+        ChatRepository (ChatRepository): Parent class
     """
 
     def __init__(self):

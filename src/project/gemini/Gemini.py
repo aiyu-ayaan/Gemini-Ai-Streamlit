@@ -11,8 +11,7 @@ load_dotenv(override=True)
 
 
 class Gemini:
-    """
-    Gemini is a class that uses the Gemini API to generate responses to messages.
+    """Gemini is a class that uses the Gemini API to generate responses to messages.
     Docs: - https://ai.google.dev/tutorials/python_quickstart
     """
 
@@ -25,10 +24,11 @@ class Gemini:
         self.__model = genai.GenerativeModel('gemini-pro')
         self.__chat = self.__model.start_chat(history=[])
 
-    def start_new_chat(self, m_list=None):
-        """
-        Starts a new chat with the Gemini API.
-        :param m_list: History of messages to start the chat with.
+    def start_new_chat(self, m_list:list[dict]=None):
+        """Start a new chat with the given message list.
+
+        Args:
+            m_list (list[dict], optional): Chat history. Defaults to None.
         """
         if m_list is None:
             m_list = []
@@ -37,11 +37,14 @@ class Gemini:
         )
 
     async def send_message(self, message: str, role: Role) -> Message:
-        """
-        Sends a message to the Gemini API and returns the response.
-        :param message: Message to send.
-        :param role: Role of the message sender.
-        :return: Response from the Gemini API mapped to the Message class.
+        """Sends a message to the Gemini API and returns the response.
+
+        Args:
+            message (str): Message to send.
+            role (Role): Role of the message sender.
+
+        Returns:
+            Message: Response from the Gemini API mapped to the Message class.
         """
         response = self.__chat.send_message({'role': role.name.lower(), 'parts': [message]})
         return Message(
@@ -49,11 +52,14 @@ class Gemini:
             content=Gemini.to_markdown(response.parts[0].text).data
         )
 
-    def summaries(self, url) -> Markdown:
-        """
-        Summarizes the content of the given URL.
-        :param url: Url
-        :return: markdown formatted summary of the content.
+    def summaries(self, url:str) -> Markdown:
+        """Summarizes the content of the given URL.
+        
+        Args:
+            url (str): Url to summarize.
+
+        Returns:
+            Markdown: Markdown formatted summary of the content.
         """
         prompt = f'''Summarize the following url in elaborately as possible.
         {url}
@@ -62,11 +68,14 @@ class Gemini:
         return Gemini.to_markdown(response.text)
 
     @staticmethod
-    def to_markdown(text):
-        """
-        Converts the given text to Markdown format.
-        :param text: Text to convert.
-        :return: Markdown formatted text.
+    def to_markdown(text:str)->Markdown:
+        """Converts the given text to Markdown format.
+    
+        Args:
+            text (str): Text to convert.
+
+        Returns:
+            Markdown: Markdown formatted text.
         """
         text = text.replace('•', '  *')
         return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
