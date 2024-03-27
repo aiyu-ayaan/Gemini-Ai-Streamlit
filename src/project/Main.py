@@ -1,54 +1,25 @@
-import asyncio
 import copy
 
 import streamlit as st
 
 from database.Emoji import Emoji
-from database.Repository import get_value_from_state, State, create_or_update_session, ChatRepositoryImp
+from database.Repository import get_value_from_state, State, ChatRepositoryImp
 from database.Session import Role, Message, convert_to_markdown
-from gemini.Gemini import Gemini
-from output.MarkdownToPdf import Export
-from utils.Utils import Links
+from database.utils import Links
+from export.MarkdownToPdf import Export
+from gemini import Gemini
 
 emoji = Emoji().get_random_emoji()
-st.set_page_config(page_title='Tutor Talk', page_icon=f'{emoji}', layout='wide')
-
-hide_streamlit_style = '''
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-.css-1y0tads {padding-top: 0rem;}
-.stDeployButton {
-            visibility: hidden;
-        }
-[data-testid="stStatusWidget"] {
-    visibility: hidden;
-}
-</style>
-
-'''
-
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-main_container = st.container()
-side_bar = st.sidebar
-database: ChatRepositoryImp = create_or_update_session(
-    State.CHAT_REPOSITORY.value,
-    init_value=ChatRepositoryImp()
-)
-
-gemini: Gemini = create_or_update_session(
-    State.GEMINI.value,
-    init_value=Gemini()
-)
-
-export: Export = create_or_update_session(
-    State.EXPORT.value,
-    init_value=Export()
-)
 
 
-def about_section():
+def about_section(container: st.container, database: ChatRepositoryImp, export: Export):
+    """Function to create the about section.
+    
+    Args:
+        container (st.container): Parenr Container or where the content will be displayed.
+        database (ChatRepositoryImp): Chat Repository object
+        export (Export): Export object
+    """
     with st.expander("About", expanded=True) as e:
         st.title(f'{emoji} Chatbot')
         st.write('Welcome to Tutor Talk')
@@ -57,13 +28,18 @@ def about_section():
                   )
         st.button('Export to PDF', key='export-pdf', use_container_width=True,
                   on_click=export.export_to_pdf,
-                  args=[convert_to_markdown(copy.deepcopy(database.get_current())), main_container,
+                  args=[convert_to_markdown(copy.deepcopy(database.get_current())), container,
                         copy.deepcopy(database.get_current()).get_session_name() + '.pdf'],
                   disabled=len(database.get_current().get_messages()) == 0
                   )
 
 
 def message_container(message: Message):
+    """Function to create a message container.
+
+    Args:
+        message (Message): Message object
+    """
     if message.get_role() == Role.MODEL:
         with st.chat_message('AI'):
             st.markdown(message.get_content(), unsafe_allow_html=True)
@@ -72,12 +48,19 @@ def message_container(message: Message):
             st.markdown(message.get_content(), unsafe_allow_html=True)
     # else:
     #     st.error('Unknown Role')
-    #     st.caption('Message set to empty due to unknown role.')
+    #     st.caption('Message set to empty due to an unknown role.')
     #     current_session = database.get_current()
     #     current_session.update_message([])
 
 
-def populate_messages(session_id: int):
+def populate_messages(session_id: int, database: ChatRepositoryImp, gemini: Gemini):
+    """Function to populate the messages.
+    
+    Args:
+        session_id (int): Current session id
+        database (ChatRepositoryImp): Database object
+        gemini (Gemini): Gemini object
+    """
     database.get_current_session(session_id)
     gemini.start_new_chat(database.get_current().get_messages())
     # with main_container:
@@ -86,6 +69,8 @@ def populate_messages(session_id: int):
 
 
 def his_section():
+    """Function to create the history section.
+    """
     with st.expander('History', expanded=True):
         st.subheader('All history')
         for session in reversed(get_value_from_state(State.SESSION_LIST_STATE.value)):
@@ -94,10 +79,12 @@ def his_section():
 
 
 def acknowledgements_sec():
+    """Acknowledgements section.
+    """
     with st.expander('Acknowledgements', expanded=False):
         st.link_button('Source Code', url=Links.GITHUB.value, use_container_width=True)
         with st.container(border=True):
-            st.image('src/img/male.png', width=80)
+            st.image('src/project/img/male.png', width=80)
             st.subheader('Ayaan', divider=True)
             st.link_button('Github', url=Links.AYAAN.value, use_container_width=True)
         with st.container():
@@ -107,27 +94,15 @@ def acknowledgements_sec():
             st.link_button('Gemini Ai', url=Links.GEMINI.value, use_container_width=True)
 
 
-with side_bar:
-    about_section()
-    his_section()
-    acknowledgements_sec()
-
-prompt = st.chat_input('Ask me anything!')
-
-
-async def process_message(input_message: str):
+async def process_message(input_message: str, database: ChatRepositoryImp, gemini: Gemini):
+    """Function to process the message in an async manner.
+    
+    Args:
+        input_message (str): Input from user.
+        database (ChatRepositoryImp): Chat Repository object.
+        gemini (Gemini): Gemini object.
+    """
     database.add_message(message=input_message, role=Role.USER)
     response = await gemini.send_message(input_message, Role.USER)
     database.add_message(response.get_content(), Role.MODEL)
     st.rerun()
-
-
-with main_container:
-    st.title(f'{emoji} Chatbot')
-    st.caption('A chatbot based on Gemini Ai.')
-    for i in database.get_current().get_messages():
-        print(i.get_role())
-        message_container(i)
-    if prompt:
-        with st.spinner('Thinking...'):
-            asyncio.run(process_message(prompt))
