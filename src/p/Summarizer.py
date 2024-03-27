@@ -1,4 +1,5 @@
 import streamlit as st
+from typing_extensions import deprecated
 
 from database.Emoji import Emoji
 from database.Repository import create_or_update_session, State
@@ -39,7 +40,12 @@ side_bar = st.sidebar
 main_container = st.container()
 
 
+@deprecated('Summarize the content of the given URL is deprecated. Can be re-implemented in the future.')
 def summarize(page_url: str):
+    """
+    Summarize the content of the given URL.
+    :param page_url: URL to summarize
+    """
     if len(page_url) == 0:
         st.warning('Please enter a valid URL')
         return
