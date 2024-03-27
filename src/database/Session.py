@@ -49,23 +49,24 @@ class Session:
     def get_messages(self):
         return self.__messages
 
-    def convert_to_markdown(self):
-        markdown = '# ' + 'Tutor Talk\n\n'
-        markdown += f'## {self.__session_name}\n\n'
-        for message in self.__messages:
-            if message.get_role() == Role.MODEL:
-                markdown += message.get_content() + '\n'
-            else:
-                markdown += '### ' + message.get_content() + '\n'
-        markdown += '\n\n'
-        markdown += '---'
-        markdown += '\n\n'
-        # markdown += '\n\n'
-        # markdown += 'Developed by [Ayaan](https://www.github.com/aiyu-ayaan)'
-        # markdown += '\n\n'
-        markdown += 'Get the code on [GitHub](https://github.com/aiyu-ayaan/Gemini-Ai-Streamlit)'
 
-        return to_markdown(markdown).data
+def convert_to_markdown(session: Session):
+    markdown = '# ' + 'Tutor Talk\n\n'
+    markdown += f'## {session.get_session_name()}\n\n'
+    for message in session.get_messages():
+        if message.get_role() == Role.MODEL:
+            markdown += message.get_content() + '\n'
+        else:
+            markdown += '### ' + message.get_content() + '\n'
+    markdown += '\n\n'
+    markdown += '---'
+    markdown += '\n\n'
+    # markdown += '\n\n'
+    # markdown += 'Developed by [Ayaan](https://www.github.com/aiyu-ayaan)'
+    # markdown += '\n\n'
+    markdown += 'Get the code on [GitHub](https://github.com/aiyu-ayaan/Gemini-Ai-Streamlit)'
+
+    return to_markdown(markdown).data
 
 
 def map_message_list_to_history(messages: list[Message]):

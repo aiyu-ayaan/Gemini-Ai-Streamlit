@@ -1,10 +1,11 @@
 import asyncio
+import copy
 
 import streamlit as st
 
 from database.Emoji import Emoji
 from database.Repository import get_value_from_state, State, create_or_update_session, ChatRepositoryImp
-from database.Session import Role, Message
+from database.Session import Role, Message, convert_to_markdown
 from gemini.Gemini import Gemini
 from output.MarkdownToPdf import Export
 from utils.Utils import Links
@@ -55,9 +56,9 @@ def about_section():
                   disabled=len(database.get_current().get_messages()) == 0
                   )
         st.button('Export to PDF', key='export-pdf', use_container_width=True,
-                  on_click=export.export_to_pdf,
-                  args=[database.get_current().convert_to_markdown(), main_container,
-                        database.get_current().get_session_name() + '.pdf'],
+                  on_click=export.export_to_pdf2,
+                  args=[convert_to_markdown(copy.deepcopy(database.get_current())), main_container,
+                        copy.deepcopy(database.get_current()).get_session_name() + '.pdf'],
                   disabled=len(database.get_current().get_messages()) == 0
                   )
 
@@ -123,8 +124,9 @@ async def process_message(input_message: str):
 
 with main_container:
     st.title(f'{emoji} Chatbot')
-    st.caption('An chatbot based on Gemini Ai.')
+    st.caption('A chatbot based on Gemini Ai.')
     for i in database.get_current().get_messages():
+        print(i.get_role())
         message_container(i)
     if prompt:
         with st.spinner('Thinking...'):
