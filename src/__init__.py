@@ -56,7 +56,7 @@ def about_section():
                   disabled=len(database.get_current().get_messages()) == 0
                   )
         st.button('Export to PDF', key='export-pdf', use_container_width=True,
-                  on_click=export.export_to_pdf2,
+                  on_click=export.export_to_pdf,
                   args=[convert_to_markdown(copy.deepcopy(database.get_current())), main_container,
                         copy.deepcopy(database.get_current()).get_session_name() + '.pdf'],
                   disabled=len(database.get_current().get_messages()) == 0
