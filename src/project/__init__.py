@@ -59,7 +59,7 @@ if __name__ == '__main__':
     # Render the sidebar sections
     with side_bar:
         about_section(main_container, database, export)
-        his_section()
+        his_section(database, gemini)
         acknowledgements_sec()
 
     # Get the user's prompt

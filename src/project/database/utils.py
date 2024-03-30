@@ -39,6 +39,7 @@ class Links(Enum):
     GITHUB = 'https://github.com/aiyu-ayaan/Gemini-Ai-Streamlit'
     GEMINI = 'https://ai.google.dev/'
     STREAMLIT = 'https://streamlit.io/'
+    MD_PDF = 'https://pypi.org/project/mdpdf/'
     PYTHON = 'https://www.python.org/'
     AYAAN = 'https://www.github.com/aiyu-ayaan'
 

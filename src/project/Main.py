@@ -16,12 +16,12 @@ def about_section(container: st.container, database: ChatRepositoryImp, export: 
     """Function to create the about section.
     
     Args:
-        container (st.container): Parenr Container or where the content will be displayed.
+        container (st.container): Parent Container or where the content will be displayed.
         database (ChatRepositoryImp): Chat Repository object
         export (Export): Export object
     """
     with st.expander("About", expanded=True) as e:
-        st.title(f'{emoji} Chatbot')
+        st.title('Chatbot')
         st.write('Welcome to Tutor Talk')
         st.button('➕ New Chat', key='new-chat', on_click=database.create_new_session, use_container_width=True,
                   disabled=len(database.get_current().get_messages()) == 0
@@ -68,14 +68,18 @@ def populate_messages(session_id: int, database: ChatRepositoryImp, gemini: Gemi
     #         message_container(i)
 
 
-def his_section():
+def his_section(database: ChatRepositoryImp, gemini: Gemini):
     """Function to create the history section.
+
+    Args:
+        database (ChatRepositoryImp): Chat Repository object.
+        gemini (Gemini): Gemini object.
     """
     with st.expander('History', expanded=True):
         st.subheader('All history')
         for session in reversed(get_value_from_state(State.SESSION_LIST_STATE.value)):
             st.button(session.get_session_name(), key=session.get_session_id,
-                      on_click=populate_messages, args=[session.get_session_id()])
+                      on_click=populate_messages, args=[session.get_session_id(), database, gemini, ])
 
 
 def acknowledgements_sec():
@@ -92,6 +96,7 @@ def acknowledgements_sec():
             st.link_button('Streamlit', url=Links.STREAMLIT.value, use_container_width=True)
             st.link_button('Python', url=Links.PYTHON.value, use_container_width=True)
             st.link_button('Gemini Ai', url=Links.GEMINI.value, use_container_width=True)
+            st.link_button('MdPdf', url=Links.MD_PDF.value, use_container_width=True)
 
 
 async def process_message(input_message: str, database: ChatRepositoryImp, gemini: Gemini):
