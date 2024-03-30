@@ -1,5 +1,7 @@
 site_name: Tutor Talk
 theme:
+  logo: assets/logo.png
+  favicon: assets/logo.png
   name: material
   palette:
     - media: "(prefers-color-scheme)"

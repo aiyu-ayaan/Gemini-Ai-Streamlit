@@ -2,7 +2,9 @@
 
 Welcome to **Tutor Talk**, your interactive learning companion powered by **Gemini AI**.
 
-![Screenshot](asserts/Screenshot.png)
+![Screenshot](assets/Screenshot.png)
+
+Here is the link to the <a href="https://tutor-talk.streamlit.app/" target="_blank">Tutor Talk</a> web application.
 
 ## Features
 
