@@ -6,7 +6,7 @@ from IPython.core.display import Markdown
 from database.utils import current_milli_time, formate_time
 
 
-def to_markdown(text:str) -> Markdown:
+def to_markdown(text: str) -> Markdown:
     """Convert the text to markdown.
 
     Args:
@@ -82,7 +82,7 @@ class Session:
         """
         return self.__session_id
 
-    def get_session_name(self)->str:
+    def get_session_name(self) -> str:
         """Get the session name.
 
         Returns:
@@ -100,7 +100,7 @@ class Session:
             message = []
         self.__messages = message
 
-    def get_messages(self)->list[Message]:
+    def get_messages(self) -> list[Message]:
         """Get the session name.
 
         Returns:
@@ -109,7 +109,7 @@ class Session:
         return self.__messages
 
 
-def convert_to_markdown(session: Session) ->str:
+def convert_to_markdown(session: Session) -> str:
     """Function to convert the session to markdown.
 
     Args:
@@ -136,7 +136,7 @@ def convert_to_markdown(session: Session) ->str:
     return to_markdown(markdown).data
 
 
-def map_message_list_to_history(messages: list[Message])->list[dict]:
+def map_message_list_to_history(messages: list[Message]) -> list[dict]:
     """Function to map the message list to history.
     Give a list of messages and return the history mentioned in https://ai.google.dev/tutorials/python_quickstart .
 

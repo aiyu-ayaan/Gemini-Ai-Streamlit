@@ -1,6 +1,8 @@
 import copy
+import threading
 
 import streamlit as st
+from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 from database.Emoji import Emoji
 from database.Repository import get_value_from_state, State, ChatRepositoryImp
@@ -63,9 +65,6 @@ def populate_messages(session_id: int, database: ChatRepositoryImp, gemini: Gemi
     """
     database.get_current_session(session_id)
     gemini.start_new_chat(database.get_current().get_messages())
-    # with main_container:
-    #     for i in database.get_current().get_messages():
-    #         message_container(i)
 
 
 def his_section(database: ChatRepositoryImp, gemini: Gemini):
@@ -99,15 +98,23 @@ def acknowledgements_sec():
             st.link_button('MdPdf', url=Links.MD_PDF.value, use_container_width=True)
 
 
-async def process_message(input_message: str, database: ChatRepositoryImp, gemini: Gemini):
+def progress_message_in_other_thread(input_message: str, database: ChatRepositoryImp, gemini: Gemini):
+    response = gemini.send_message(input_message, Role.USER)
+    database.add_message(response.get_content(), Role.MODEL)
+
+
+@st.cache_data()
+def thinking(input_message: str, _database: ChatRepositoryImp, _gemini: Gemini):
     """Function to process the message in an async manner.
     
     Args:
         input_message (str): Input from user.
-        database (ChatRepositoryImp): Chat Repository object.
-        gemini (Gemini): Gemini object.
+        _database (ChatRepositoryImp): Chat Repository object.
+        _gemini (Gemini): Gemini object.
     """
-    database.add_message(message=input_message, role=Role.USER)
-    response = await gemini.send_message(input_message, Role.USER)
-    database.add_message(response.get_content(), Role.MODEL)
+
+    thread = threading.Thread(target=progress_message_in_other_thread, args=(input_message, _database, _gemini))
+    add_script_run_ctx(thread)
+    thread.start()
+    thread.join()
     st.rerun()

@@ -6,7 +6,6 @@ Note:
 
 
 """
-import asyncio
 
 from Main import *
 from database.Repository import ChatRepositoryImp, create_or_update_session
@@ -72,10 +71,9 @@ if __name__ == '__main__':
 
         # Display the chat messages
         for i in database.get_current().get_messages():
-            print(i.get_role())
             message_container(i)
-
         # Process the user's prompt
         if prompt:
-            with st.spinner('Thinking...'):
-                asyncio.run(process_message(prompt, database, gemini))
+            message_container(Message(Role.USER, prompt))
+            database.add_message(message=prompt, role=Role.USER)
+            thinking(prompt, database, gemini)

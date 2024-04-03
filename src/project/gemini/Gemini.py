@@ -36,7 +36,7 @@ class Gemini:
             history=map_message_list_to_history(m_list)
         )
 
-    async def send_message(self, message: str, role: Role) -> Message:
+    def send_message(self, message: str, role: Role) -> Message:
         """Sends a message to the Gemini API and returns the response.
 
         Args:
