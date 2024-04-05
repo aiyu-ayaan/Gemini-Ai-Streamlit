@@ -99,6 +99,13 @@ def acknowledgements_sec():
 
 
 def progress_message_in_other_thread(input_message: str, database: ChatRepositoryImp, gemini: Gemini):
+    """ Function to process the message in another thread.
+
+    Args:
+        input_message (str): Input from user.
+        database (ChatRepositoryImp): Chat Repository object.
+        gemini (Gemini): Gemini object.
+    """
     response = gemini.send_message(input_message, Role.USER)
     database.add_message(response.get_content(), Role.MODEL)
 
