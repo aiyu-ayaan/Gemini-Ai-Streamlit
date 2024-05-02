@@ -1,0 +1,14 @@
+name: Convert Python Code to PDF
+on:
+  workflow_dispatch:
+
+jobs:
+  convert-to-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Convert to PDF
+        uses: ./.github/actions/convert-to-pdf
+        with:
+          source-dir: 'src/project/'
